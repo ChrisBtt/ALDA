@@ -110,6 +110,8 @@ class testBucketSort(unittest.TestCase):
 	def setUp(self):
 		data = createData(100000)
 		self.arrays = [data]
+		for i in range(10):
+			self.arrays.append(createData(100000))
 
 	def testBucketSort(self):
 		for a in self.arrays:
@@ -122,7 +124,9 @@ class testBucketSort(unittest.TestCase):
 
 	def checkBucketSort(self, original):
 		self.assertEqual(bucketSort(original, bucketMap, 2), sorted(original))
-
+		self.assertEqual(bucketSort(original, bucketMap, 5), sorted(original))
+		self.assertEqual(bucketSort(original, bucketMap, 10), sorted(original))
+		self.assertEqual(bucketSort(original, bucketMap, 50), sorted(original))
 
 if __name__ == '__main__':
 	unittest.main()
