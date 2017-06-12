@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 def createData(size):
 	a = []
 	while len(a) < size:
-		size = len(a)
 		x, y = random.uniform(-1,1), random.uniform(-1,1)
 		r = np.sqrt(x**2 + y**2)
 		if r < 1.0:
@@ -13,7 +12,7 @@ def createData(size):
 	return a
 
 def bucketMap(key, M):
-       return int(key * M)
+    return int(key**2 * M)
 
 def insertionSort(a):   # sort 'a' in-place
     N = len(a)          # number of elements
@@ -34,7 +33,6 @@ def insertionSort(a):   # sort 'a' in-place
 
 def bucketSort(a, bucketMap, d):
     size = len(a)
-
     drive = int(size / float(d))  # Anzahl der Buckets festlegen
     print("M:", drive)
 
@@ -51,10 +49,6 @@ def bucketSort(a, bucketMap, d):
     for k in range(drive):
         end = start + len(buckets[k])  # Bis zu welchem Index wir kopieren wollen
         buckets[k] = insertionSort(buckets[k])      # Daten innerhalb des Buckets sortieren
-
-        for bucket in buckets:
-        	print(bucket, " : ", len(bucket))
-
         a[start:end] = buckets[k]      # Daten an der richtigen Position in a einfügen
         start += len(buckets[k])          # Anfang für den nächsten Bucket
 
@@ -73,7 +67,7 @@ def deviation(data):
 
 d = 2
 
-data = createData(100)
+data = createData(100000)
 sortedData = bucketSort(data, bucketMap, d)
 deviation(data)
 
