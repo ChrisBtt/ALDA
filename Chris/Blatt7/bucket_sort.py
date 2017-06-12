@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import unittest
 
 def createData(size):
 	a = []
@@ -11,8 +12,14 @@ def createData(size):
 			a.append(r)
 	return a
 
+def linMap(key, M):
+	return int(key*M)
+
 def bucketMap(key, M):
     return int(key**2 * M)
+
+# das Quadrieren der Radien fuehrt zu einer groeßeren Streuung der großen Werte und laesst kleine Werte nahezu gleich.
+# Formal gibt es durch die zwei Zufallszahlen im Pythagoras eine Verzerrung der Radien, die durch das Quadrieren rückgängig gemacht wird.
 
 def insertionSort(a):   # sort 'a' in-place
     N = len(a)          # number of elements
@@ -65,12 +72,58 @@ def deviation(data):
 	plt.hist(sampling, bins = 100)
 	plt.savefig("deviation.pdf")
 
+def chiQuadrat(a, bucketMap, d):
+
+	drive = int(len(a) / float(d))  # Anzahl der Buckets festlegen
+	print("M:", drive)
+
+	# M leere Buckets erzeugen
+	buckets = [[] for k in range(drive)]
+
+	# Daten auf die Buckets verteilen
+	for k in range(len(a)):
+	    index = bucketMap(a[k], drive) # Bucket-Index berechnen
+	    buckets[index].append(a[k])    # a[k] im passenden Bucket einfügen
+
+	c = len(a)/drive
+	chi_square = 0
+
+	for bucket in buckets:
+		chi_square += (len(bucket)-c)**2/c
+
+	tau = np.sqrt(2*chi_square)-np.sqrt(2*drive-3)
+
+	if np.abs(tau)<=3:
+		return True
+
+	return False
+
 d = 2
 
 data = createData(100000)
 sortedData = bucketSort(data, bucketMap, d)
 deviation(data)
 
+#######################################################################################
+class testBucketSort(unittest.TestCase):
+
+	def setUp(self):
+		data = createData(100000)
+		self.arrays = [data]
+
+	def testBucketSort(self):
+		for a in self.arrays:
+			self.checkBucketSort(a)
+
+	def testDeviation(self):
+		for a in self.arrays:
+			self.assertTrue(chiQuadrat(a, bucketMap, d))
+			self.assertFalse(chiQuadrat(a, linMap, d))
+
+	def checkBucketSort(self, original):
+		self.assertEqual(bucketSort(original, bucketMap, 2), sorted(original))
 
 
+if __name__ == '__main__':
+	unittest.main()
 
